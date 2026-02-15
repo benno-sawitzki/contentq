@@ -43,6 +43,32 @@ contentq history
 contentq platforms
 ```
 
+## Inbox
+
+Capture ideas, screenshots, and inspiration before they become posts:
+
+```bash
+# Add items
+contentq inbox add "idea for a thread about AI tools" --type idea
+contentq inbox add screenshot.png --type social --note "cool design"
+contentq inbox add --url "https://example.com/article" --type inspo --tags "competitor,design"
+
+# Browse inbox
+contentq inbox                   # list all
+contentq inbox --social          # filter by type
+contentq inbox --recent          # last 5 items
+contentq inbox show <id>         # full details
+contentq inbox stats             # count by type
+
+# Promote to content queue
+contentq inbox promote <id>      # creates a draft post
+
+# Clean up
+contentq inbox delete <id>
+```
+
+Inbox items are stored in `.contentq/inbox.json` with media files in `.contentq/inbox/{social,inspo,ideas,general}/`.
+
 ## JSON Mode
 
 All commands support `--json` for machine-readable output:
