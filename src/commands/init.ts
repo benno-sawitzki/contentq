@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import chalk from 'chalk';
-import { getCqDir, writeConfig, writeQueue, writeHistory } from '../store';
+import { getCqDir, writeConfig, writeQueue, writeHistory, writeInbox, ensureInboxDirs } from '../store';
 import { Config } from '../types';
 import { isJsonMode, out } from '../output';
 
@@ -33,6 +33,8 @@ export function initCommand() {
   writeConfig(config);
   writeQueue([]);
   writeHistory([]);
+  ensureInboxDirs();
+  writeInbox([]);
 
   if (isJsonMode()) return out({ success: true, path: dir });
   console.log(chalk.green('✓ Initialized .contentq/'));

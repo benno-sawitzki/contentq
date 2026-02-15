@@ -12,6 +12,7 @@ import { scheduleCommand } from './commands/schedule';
 import { statsCommand } from './commands/stats';
 import { platformsCommand } from './commands/platforms';
 import { historyCommand } from './commands/history';
+import { inboxListCommand, inboxAddCommand, inboxShowCommand, inboxPromoteCommand, inboxDeleteCommand, inboxStatsCommand } from './commands/inbox';
 
 const program = new Command();
 
@@ -76,5 +77,40 @@ program.command('platforms')
 program.command('history')
   .description('Show published posts log')
   .action(historyCommand);
+
+const inbox = program.command('inbox')
+  .description('Manage media inbox')
+  .option('--social', 'Filter by social type')
+  .option('--inspo', 'Filter by inspiration')
+  .option('--ideas', 'Filter by ideas')
+  .option('--general', 'Filter by general')
+  .option('--recent', 'Show last 5 items')
+  .action((opts) => inboxListCommand(opts));
+
+inbox.command('add [input]')
+  .description('Add item to inbox')
+  .option('--type <type>', 'Item type: social, inspo, idea, general', 'general')
+  .option('--note <note>', 'Description or caption')
+  .option('--tags <tags>', 'Comma-separated tags')
+  .option('--url <url>', 'URL to save')
+  .option('--source <source>', 'Source: whatsapp, cli, web', 'cli')
+  .option('--title <title>', 'Title for the item')
+  .action(inboxAddCommand);
+
+inbox.command('show <id>')
+  .description('Show full inbox item details')
+  .action(inboxShowCommand);
+
+inbox.command('promote <id>')
+  .description('Promote inbox item to content queue draft')
+  .action(inboxPromoteCommand);
+
+inbox.command('delete <id>')
+  .description('Delete inbox item')
+  .action(inboxDeleteCommand);
+
+inbox.command('stats')
+  .description('Show inbox statistics')
+  .action(inboxStatsCommand);
 
 program.parse();

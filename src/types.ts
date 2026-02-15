@@ -38,3 +38,21 @@ export interface PlatformAdapter {
   name: string;
   publish(post: Post, config: any): Promise<PublishResult>;
 }
+
+export type InboxType = 'social' | 'inspo' | 'idea' | 'general';
+
+export interface InboxItem {
+  id: string;
+  type: InboxType;
+  title: string | null;
+  note: string | null;
+  media: string | null;
+  mediaType: string | null;
+  url: string | null;
+  text: string | null;
+  tags: string[];
+  promoted: boolean;
+  promotedTo: string | null;
+  createdAt: string;
+  source: string;
+}

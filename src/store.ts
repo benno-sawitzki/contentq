@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as yaml from 'yaml';
-import { Post, Config } from './types';
+import { Post, Config, InboxItem } from './types';
 
 const CQ_DIR = '.contentq';
 
@@ -44,4 +44,21 @@ export function readConfig(): Config {
 
 export function writeConfig(config: Config): void {
   fs.writeFileSync(path.join(getCqDir(), 'config.yaml'), yaml.stringify(config));
+}
+
+export function readInbox(): InboxItem[] {
+  const p = path.join(getCqDir(), 'inbox.json');
+  if (!fs.existsSync(p)) return [];
+  return JSON.parse(fs.readFileSync(p, 'utf-8'));
+}
+
+export function writeInbox(items: InboxItem[]): void {
+  fs.writeFileSync(path.join(getCqDir(), 'inbox.json'), JSON.stringify(items, null, 2));
+}
+
+export function ensureInboxDirs(): void {
+  const dir = getCqDir();
+  for (const sub of ['social', 'inspo', 'ideas', 'general']) {
+    fs.mkdirSync(path.join(dir, 'inbox', sub), { recursive: true });
+  }
 }
