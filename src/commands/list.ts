@@ -2,9 +2,9 @@ import chalk from 'chalk';
 import { ensureInitialized, readQueue } from '../store';
 import { isJsonMode, out, formatPost } from '../output';
 
-export function listCommand(opts: { status?: string; platform?: string }) {
+export async function listCommand(opts: { status?: string; platform?: string }) {
   ensureInitialized();
-  let posts = readQueue();
+  let posts = await readQueue();
 
   if (opts.status) posts = posts.filter(p => p.status === opts.status);
   if (opts.platform) posts = posts.filter(p => p.platform === opts.platform);

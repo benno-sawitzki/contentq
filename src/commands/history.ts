@@ -2,9 +2,9 @@ import chalk from 'chalk';
 import { ensureInitialized, readHistory } from '../store';
 import { isJsonMode, out, formatPost } from '../output';
 
-export function historyCommand() {
+export async function historyCommand() {
   ensureInitialized();
-  const history = readHistory();
+  const history = await readHistory();
 
   if (isJsonMode()) return out(history);
 

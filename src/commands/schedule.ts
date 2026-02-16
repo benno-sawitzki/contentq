@@ -2,9 +2,9 @@ import chalk from 'chalk';
 import { ensureInitialized, readQueue, writeQueue } from '../store';
 import { isJsonMode, out } from '../output';
 
-export function scheduleCommand(id: string, dateStr: string) {
+export async function scheduleCommand(id: string, dateStr: string) {
   ensureInitialized();
-  const posts = readQueue();
+  const posts = await readQueue();
   const idx = posts.findIndex(p => p.id === id || p.id.startsWith(id));
 
   if (idx === -1) {
@@ -22,7 +22,7 @@ export function scheduleCommand(id: string, dateStr: string) {
 
   posts[idx].status = 'scheduled';
   posts[idx].scheduledFor = date.toISOString();
-  writeQueue(posts);
+  await writeQueue(posts);
 
   if (isJsonMode()) return out({ success: true, post: posts[idx] });
   console.log(chalk.green(`✓ Scheduled for ${date.toLocaleString()}`));

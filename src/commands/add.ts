@@ -5,7 +5,7 @@ import { ensureInitialized, readQueue, writeQueue, readConfig } from '../store';
 import { Post } from '../types';
 import { isJsonMode, out } from '../output';
 
-export function addCommand(text: string | undefined, opts: { from?: string; platform?: string; tags?: string; template?: string }) {
+export async function addCommand(text: string | undefined, opts: { from?: string; platform?: string; tags?: string; template?: string }) {
   ensureInitialized();
 
   let content = text;
@@ -24,7 +24,7 @@ export function addCommand(text: string | undefined, opts: { from?: string; plat
     process.exit(1);
   }
 
-  const config = readConfig();
+  const config = await readConfig();
   const platform = opts.platform || config.defaults?.platform || 'linkedin';
   const tags = opts.tags ? opts.tags.split(',').map(t => t.trim()) : [];
 
@@ -41,9 +41,9 @@ export function addCommand(text: string | undefined, opts: { from?: string; plat
     template: opts.template || null,
   };
 
-  const queue = readQueue();
+  const queue = await readQueue();
   queue.push(post);
-  writeQueue(queue);
+  await writeQueue(queue);
 
   if (isJsonMode()) return out({ success: true, post });
   console.log(chalk.green(`✓ Added post ${chalk.dim(post.id.slice(0, 8))} [${platform}]`));

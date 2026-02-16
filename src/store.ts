@@ -1,6 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as yaml from 'yaml';
+import { isCloudMode, getClient } from '@openbrain/cli-client';
 import { Post, Config, InboxItem } from './types';
 
 const CQ_DIR = '.contentq';
@@ -16,43 +17,51 @@ export function ensureInitialized(): void {
   }
 }
 
-export function readQueue(): Post[] {
+export async function readQueue(): Promise<Post[]> {
+  if (isCloudMode()) return getClient().listContent();
   const p = path.join(getCqDir(), 'queue.json');
   if (!fs.existsSync(p)) return [];
   return JSON.parse(fs.readFileSync(p, 'utf-8'));
 }
 
-export function writeQueue(posts: Post[]): void {
+export async function writeQueue(posts: Post[]): Promise<void> {
+  if (isCloudMode()) { await getClient().bulkWriteContent(posts); return; }
   fs.writeFileSync(path.join(getCqDir(), 'queue.json'), JSON.stringify(posts, null, 2));
 }
 
-export function readHistory(): Post[] {
+export async function readHistory(): Promise<Post[]> {
+  if (isCloudMode()) return [];
   const p = path.join(getCqDir(), 'history.json');
   if (!fs.existsSync(p)) return [];
   return JSON.parse(fs.readFileSync(p, 'utf-8'));
 }
 
-export function writeHistory(posts: Post[]): void {
+export async function writeHistory(posts: Post[]): Promise<void> {
+  if (isCloudMode()) return;
   fs.writeFileSync(path.join(getCqDir(), 'history.json'), JSON.stringify(posts, null, 2));
 }
 
-export function readConfig(): Config {
+export async function readConfig(): Promise<Config> {
+  if (isCloudMode()) return getClient().getConfig('contentq');
   const p = path.join(getCqDir(), 'config.yaml');
   if (!fs.existsSync(p)) return { platforms: {} };
   return yaml.parse(fs.readFileSync(p, 'utf-8')) || { platforms: {} };
 }
 
-export function writeConfig(config: Config): void {
+export async function writeConfig(config: Config): Promise<void> {
+  if (isCloudMode()) { await getClient().writeConfig('contentq', config); return; }
   fs.writeFileSync(path.join(getCqDir(), 'config.yaml'), yaml.stringify(config));
 }
 
-export function readInbox(): InboxItem[] {
+export async function readInbox(): Promise<InboxItem[]> {
+  if (isCloudMode()) return getClient().getInbox();
   const p = path.join(getCqDir(), 'inbox.json');
   if (!fs.existsSync(p)) return [];
   return JSON.parse(fs.readFileSync(p, 'utf-8'));
 }
 
-export function writeInbox(items: InboxItem[]): void {
+export async function writeInbox(items: InboxItem[]): Promise<void> {
+  if (isCloudMode()) { await getClient().writeInbox(items); return; }
   fs.writeFileSync(path.join(getCqDir(), 'inbox.json'), JSON.stringify(items, null, 2));
 }
 

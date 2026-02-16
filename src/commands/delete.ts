@@ -2,9 +2,9 @@ import chalk from 'chalk';
 import { ensureInitialized, readQueue, writeQueue } from '../store';
 import { isJsonMode, out } from '../output';
 
-export function deleteCommand(id: string) {
+export async function deleteCommand(id: string) {
   ensureInitialized();
-  const posts = readQueue();
+  const posts = await readQueue();
   const idx = posts.findIndex(p => p.id === id || p.id.startsWith(id));
 
   if (idx === -1) {
@@ -14,7 +14,7 @@ export function deleteCommand(id: string) {
   }
 
   const removed = posts.splice(idx, 1)[0];
-  writeQueue(posts);
+  await writeQueue(posts);
 
   if (isJsonMode()) return out({ success: true, deleted: removed.id });
   console.log(chalk.green(`✓ Deleted post ${chalk.dim(removed.id.slice(0, 8))}`));

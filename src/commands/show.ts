@@ -2,9 +2,9 @@ import chalk from 'chalk';
 import { ensureInitialized, readQueue } from '../store';
 import { isJsonMode, out, formatPost } from '../output';
 
-export function showCommand(id: string) {
+export async function showCommand(id: string) {
   ensureInitialized();
-  const posts = readQueue();
+  const posts = await readQueue();
   const post = posts.find(p => p.id === id || p.id.startsWith(id));
 
   if (!post) {

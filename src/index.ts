@@ -27,6 +27,9 @@ program
 
 program.command('init')
   .description('Initialize .contentq/ in current directory')
+  .option('--cloud', 'Configure cloud mode')
+  .option('--url <url>', 'Open Brain API URL')
+  .option('--key <key>', 'API key')
   .action(initCommand);
 
 program.command('add [text]')

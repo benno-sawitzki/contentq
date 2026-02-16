@@ -32,9 +32,9 @@ async function publishPost(post: Post, config: any): Promise<Post> {
 
 export async function publishCommand(id: string | undefined, opts: { pending?: boolean }) {
   ensureInitialized();
-  const config = readConfig();
-  const queue = readQueue();
-  const history = readHistory();
+  const config = await readConfig();
+  const queue = await readQueue();
+  const history = await readHistory();
 
   if (opts.pending) {
     const now = new Date();
@@ -60,8 +60,8 @@ export async function publishCommand(id: string | undefined, opts: { pending?: b
     }
 
     const remaining = queue.filter(p => p.status !== 'published');
-    writeQueue(remaining);
-    writeHistory(history);
+    await writeQueue(remaining);
+    await writeHistory(history);
     if (isJsonMode()) out({ published: results.filter(r => r.success).length, results });
     return;
   }
@@ -83,12 +83,12 @@ export async function publishCommand(id: string | undefined, opts: { pending?: b
   if (queue[idx].status === 'published') {
     history.push(queue[idx]);
     queue.splice(idx, 1);
-    writeQueue(queue);
-    writeHistory(history);
+    await writeQueue(queue);
+    await writeHistory(history);
     if (isJsonMode()) return out({ success: true, post: history[history.length - 1] });
     console.log(chalk.green(`✓ Published!`));
   } else {
-    writeQueue(queue);
+    await writeQueue(queue);
     if (isJsonMode()) return out({ success: false, error: queue[idx].publishResult.error });
     console.log(chalk.red(`✗ Failed: ${queue[idx].publishResult.error}`));
   }

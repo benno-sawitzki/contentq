@@ -2,10 +2,10 @@ import chalk from 'chalk';
 import { ensureInitialized, readQueue, readHistory } from '../store';
 import { isJsonMode, out } from '../output';
 
-export function statsCommand() {
+export async function statsCommand() {
   ensureInitialized();
-  const queue = readQueue();
-  const history = readHistory();
+  const queue = await readQueue();
+  const history = await readHistory();
   const all = [...queue, ...history];
 
   const byStatus: Record<string, number> = {};

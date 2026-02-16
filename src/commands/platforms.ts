@@ -3,9 +3,9 @@ import { ensureInitialized, readConfig } from '../store';
 import { listAdapters } from '../adapters';
 import { isJsonMode, out } from '../output';
 
-export function platformsCommand() {
+export async function platformsCommand() {
   ensureInitialized();
-  const config = readConfig();
+  const config = await readConfig();
   const available = listAdapters();
   const configured = Object.keys(config.platforms || {});
 

@@ -2,9 +2,9 @@ import chalk from 'chalk';
 import { ensureInitialized, readQueue, writeQueue } from '../store';
 import { isJsonMode, out } from '../output';
 
-export function editCommand(id: string, text: string, opts: { platform?: string; tags?: string }) {
+export async function editCommand(id: string, text: string, opts: { platform?: string; tags?: string }) {
   ensureInitialized();
-  const posts = readQueue();
+  const posts = await readQueue();
   const idx = posts.findIndex(p => p.id === id || p.id.startsWith(id));
 
   if (idx === -1) {
@@ -16,7 +16,7 @@ export function editCommand(id: string, text: string, opts: { platform?: string;
   if (text) posts[idx].text = text;
   if (opts.platform) posts[idx].platform = opts.platform;
   if (opts.tags) posts[idx].tags = opts.tags.split(',').map(t => t.trim());
-  writeQueue(posts);
+  await writeQueue(posts);
 
   if (isJsonMode()) return out({ success: true, post: posts[idx] });
   console.log(chalk.green(`✓ Updated post ${chalk.dim(posts[idx].id.slice(0, 8))}`));

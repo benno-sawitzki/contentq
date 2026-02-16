@@ -56,9 +56,9 @@ function formatItemFull(item: InboxItem): string {
   return lines.join('\n');
 }
 
-export function inboxListCommand(opts: { social?: boolean; inspo?: boolean; ideas?: boolean; general?: boolean; recent?: boolean }) {
+export async function inboxListCommand(opts: { social?: boolean; inspo?: boolean; ideas?: boolean; general?: boolean; recent?: boolean }) {
   ensureInitialized();
-  let items = readInbox();
+  let items = await readInbox();
 
   if (opts.social) items = items.filter(i => i.type === 'social');
   else if (opts.inspo) items = items.filter(i => i.type === 'inspo');
@@ -77,7 +77,7 @@ export function inboxListCommand(opts: { social?: boolean; inspo?: boolean; idea
   items.forEach(i => console.log(formatItem(i)));
 }
 
-export function inboxAddCommand(input: string | undefined, opts: { type?: string; note?: string; tags?: string; url?: string; source?: string; title?: string }) {
+export async function inboxAddCommand(input: string | undefined, opts: { type?: string; note?: string; tags?: string; url?: string; source?: string; title?: string }) {
   ensureInitialized();
   ensureInboxDirs();
 
@@ -135,17 +135,17 @@ export function inboxAddCommand(input: string | undefined, opts: { type?: string
     item.mediaType = 'url';
   }
 
-  const inbox = readInbox();
+  const inbox = await readInbox();
   inbox.push(item);
-  writeInbox(inbox);
+  await writeInbox(inbox);
 
   if (isJsonMode()) return out({ success: true, item });
   console.log(chalk.green(`✓ Added to inbox ${chalk.dim(item.id.slice(0, 8))} [${TYPE_EMOJI[type]} ${type}]`));
 }
 
-export function inboxShowCommand(id: string) {
+export async function inboxShowCommand(id: string) {
   ensureInitialized();
-  const items = readInbox();
+  const items = await readInbox();
   const item = items.find(i => i.id === id || i.id.startsWith(id));
 
   if (!item) {
@@ -158,9 +158,9 @@ export function inboxShowCommand(id: string) {
   console.log(formatItemFull(item));
 }
 
-export function inboxPromoteCommand(id: string) {
+export async function inboxPromoteCommand(id: string) {
   ensureInitialized();
-  const inbox = readInbox();
+  const inbox = await readInbox();
   const idx = inbox.findIndex(i => i.id === id || i.id.startsWith(id));
 
   if (idx === -1) {
@@ -183,21 +183,21 @@ export function inboxPromoteCommand(id: string) {
     template: null,
   };
 
-  const queue = readQueue();
+  const queue = await readQueue();
   queue.push(post);
-  writeQueue(queue);
+  await writeQueue(queue);
 
   item.promoted = true;
   item.promotedTo = post.id;
-  writeInbox(inbox);
+  await writeInbox(inbox);
 
   if (isJsonMode()) return out({ success: true, item, post });
   console.log(chalk.green(`✓ Promoted to draft ${chalk.dim(post.id.slice(0, 8))}`));
 }
 
-export function inboxDeleteCommand(id: string) {
+export async function inboxDeleteCommand(id: string) {
   ensureInitialized();
-  const inbox = readInbox();
+  const inbox = await readInbox();
   const idx = inbox.findIndex(i => i.id === id || i.id.startsWith(id));
 
   if (idx === -1) {
@@ -207,15 +207,15 @@ export function inboxDeleteCommand(id: string) {
   }
 
   const item = inbox.splice(idx, 1)[0];
-  writeInbox(inbox);
+  await writeInbox(inbox);
 
   if (isJsonMode()) return out({ success: true, deleted: item.id });
   console.log(chalk.green(`✓ Deleted ${chalk.dim(item.id.slice(0, 8))}`));
 }
 
-export function inboxStatsCommand() {
+export async function inboxStatsCommand() {
   ensureInitialized();
-  const items = readInbox();
+  const items = await readInbox();
 
   const counts: Record<string, number> = { social: 0, inspo: 0, idea: 0, general: 0 };
   items.forEach(i => { counts[i.type] = (counts[i.type] || 0) + 1; });
